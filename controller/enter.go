@@ -1,0 +1,11 @@
+// Package controller
+// @author: kbj
+// @date: 2023/2/2
+package controller
+
+import "react-admin-server/controller/system"
+
+var (
+	LoginController = new(system.LoginController)
+	UserController  = new(system.UserController)
+)
