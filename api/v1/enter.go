@@ -9,7 +9,7 @@ import (
 )
 
 func Init(app *fiber.App) {
-	v1Group := app.Group("v1", middleware.InitJwt())
+	v1Group := app.Group("v1", middleware.AddCustomHeaders(), middleware.InitJwt())
 
 	(&CommonApi{router: &v1Group}).Init()                // 系统通用API
 	(&SystemApi{router: v1Group.Group("system")}).Init() // 系统管理

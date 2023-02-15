@@ -29,20 +29,15 @@ func (l *LoginService) Login(ctx *fiber.Ctx, param *system.LoginRequest) error {
 	// 查询对应用户信息
 	var user domain.User
 	if err := g.DbClient.Where("username = ? and password = ?", param.Username, param.Password).First(&user).Error; err != nil {
-		tool.LogDbError(err)
+		_ = tool.LogDbError(err)
 		return consts.NewServiceError("用户名或密码错误")
 	}
 
+	// 生成Token
 	userResp := system.LoginUserResponse{
 		ID:       user.ID,
-		CreateAt: user.CreateAt,
-		UpdateAt: user.UpdateAt,
 		Username: user.Username,
-		Mobile:   user.Mobile,
-		Gender:   user.Gender,
 	}
-
-	// 生成Token
 	token, err := l.generateJwtToken(&userResp)
 	if err != nil {
 		return err
@@ -50,7 +45,7 @@ func (l *LoginService) Login(ctx *fiber.Ctx, param *system.LoginRequest) error {
 
 	// 返回登录成功
 	ctx.Set(fiber.HeaderAuthorization, token)
-	return r.Ok(ctx, r.Msg("登录成功"), r.Data(&userResp))
+	return r.Ok(ctx, r.Msg("登录成功"))
 }
 
 // Info 查询登录用户信息
@@ -65,6 +60,7 @@ func (l *LoginService) Info(ctx *fiber.Ctx) error {
 			Username: user.Username,
 			Mobile:   user.Mobile,
 			Gender:   user.Gender,
+			Avatar:   user.Avatar,
 		},
 	}
 	return r.Ok(ctx, r.Data(resp))
@@ -122,11 +118,7 @@ func (l *LoginService) RefreshToken(id uint) string {
 
 	userResp := system.LoginUserResponse{
 		ID:       user.ID,
-		CreateAt: user.CreateAt,
-		UpdateAt: user.UpdateAt,
 		Username: user.Username,
-		Mobile:   user.Mobile,
-		Gender:   user.Gender,
 	}
 
 	// 生成Token
