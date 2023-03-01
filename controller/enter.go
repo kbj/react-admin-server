@@ -8,4 +8,5 @@ import "react-admin-server/controller/system"
 var (
 	LoginController = new(system.LoginController)
 	UserController  = new(system.UserController)
+	DictController  = new(system.DictController)
 )

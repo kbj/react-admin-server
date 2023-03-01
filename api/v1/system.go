@@ -13,7 +13,8 @@ type SystemApi struct {
 }
 
 func (api *SystemApi) Init() {
-	api.initUserApi() // 初始化用户模块接口
+	api.initUserApi() // 初始化用户模块
+	api.initDictApi() // 初始化字典模块
 }
 
 func (api *SystemApi) initUserApi() {
@@ -23,4 +24,10 @@ func (api *SystemApi) initUserApi() {
 	route.Post("/", controller.UserController.Add)
 	route.Put("/", controller.UserController.Edit)
 	route.Delete("/:ids", controller.UserController.Delete)
+}
+
+func (api *SystemApi) initDictApi() {
+	route := api.router.Group("dict")
+	route.Get("/list", controller.DictController.List)
+	route.Get("/:id", controller.DictController.GetInfo)
 }

@@ -25,13 +25,13 @@ func (*UserService) List(ctx *fiber.Ctx, param *system.UserSearch) error {
 
 	// 查询条件
 	if param.Username != "" {
-		db = db.Where("username like ?", "%"+param.Username+"%")
+		db.Where("username like ?", "%"+param.Username+"%")
 	}
 	if param.Mobile != "" {
-		db = db.Where("mobile = ?", param.Mobile)
+		db.Where("mobile = ?", param.Mobile)
 	}
 	if param.Gender != "" {
-		db = db.Where("gender = ?", param.Gender)
+		db.Where("gender = ?", param.Gender)
 	}
 	page, err := tool.SelectPageList[domain.User](ctx, db)
 	if err != nil {
