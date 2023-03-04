@@ -6,7 +6,7 @@ package domain
 type Dict struct {
 	Common
 	DictName string `json:"dictName,omitempty" gorm:"size:100;comment:字典名称;index;not null"`
-	DictType string `json:"dictType,omitempty" gorm:"size:100;comment:字典类型名;unique;not null"`
+	DictType string `json:"dictType,omitempty" gorm:"size:100;comment:字典类型名;index;not null"`
 	Enabled  bool   `json:"enabled" gorm:"comment:是否启用;not null;default:true"`
 }
 

@@ -30,4 +30,5 @@ func (api *SystemApi) initDictApi() {
 	route := api.router.Group("dict")
 	route.Get("/list", controller.DictController.List)
 	route.Get("/:id", controller.DictController.GetInfo)
+	route.Post("", controller.DictController.Add)
 }

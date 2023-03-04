@@ -9,9 +9,11 @@ import (
 	"gorm.io/gorm"
 	"react-admin-server/entity/domain"
 	"react-admin-server/entity/vo/system"
+	"react-admin-server/global/consts"
 	"react-admin-server/global/g"
 	"react-admin-server/tool"
 	"react-admin-server/tool/r"
+	"time"
 )
 
 type DictService struct {
@@ -45,4 +47,31 @@ func (*DictService) GetInfo(ctx *fiber.Ctx, id int) error {
 		return r.Fail(ctx, "参数有误")
 	}
 	return r.Ok(ctx, r.Data(&user))
+}
+
+// Add 新增字典类型
+func (*DictService) Add(ctx *fiber.Ctx, param *system.DictForm) error {
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		// 查询是否有重复
+		var count int64
+		tx.Model(&domain.Dict{}).Where("dict_type = ?", param.DictType).Count(&count)
+		if count > 0 {
+			return consts.NewServiceError("字典类型名称已重复")
+		}
+
+		// 保存记录
+		dict := domain.Dict{
+			DictName: param.DictName,
+			DictType: param.DictType,
+			Enabled:  *param.Enabled,
+		}
+		dict.CreateBy = g.LoginUser.UserId(ctx)
+		dict.CreateAt = time.Now().UnixMilli()
+		db := tx.Save(&dict)
+		if db.Error != nil || db.RowsAffected < 1 {
+			_ = tool.LogDbError(db.Error)
+			return consts.NewServiceError("保存失败")
+		}
+		return r.Ok(ctx)
+	})
 }
