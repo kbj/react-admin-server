@@ -5,6 +5,7 @@ package system
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"react-admin-server/entity/vo"
 	"react-admin-server/entity/vo/system"
 	"react-admin-server/service"
 	"react-admin-server/tool"
@@ -53,9 +54,7 @@ func (*UserController) Edit(ctx *fiber.Ctx) error {
 
 // Delete 删除用户
 func (*UserController) Delete(ctx *fiber.Ctx) error {
-	params := struct {
-		IDs []uint `params:"ids"`
-	}{}
+	var params vo.Ids
 	_ = ctx.ParamsParser(&params)
 	return service.UserService.Delete(ctx, &params.IDs)
 }

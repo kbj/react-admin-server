@@ -12,5 +12,4 @@ type Common struct {
 	UpdateAt int64                 `gorm:"comment:修改时间;autoUpdateTime:milli" json:"updateAt"`
 	UpdateBy uint                  `gorm:"comment:修改人" json:"updateBy"`
 	DeleteAt soft_delete.DeletedAt `gorm:"comment:删除时间;index;softDelete:milli;default:0;not null" json:"deleteAt,omitempty"`
-	DeleteBy uint                  `gorm:"comment:删除人" json:"deleteBy"`
 }

@@ -5,6 +5,7 @@ package system
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"react-admin-server/entity/vo"
 	"react-admin-server/entity/vo/system"
 	"react-admin-server/service"
 	"react-admin-server/tool"
@@ -49,4 +50,11 @@ func (*DictController) Edit(ctx *fiber.Ctx) error {
 		return r.Fail(ctx, "ID不能为空")
 	}
 	return service.DictService.Edit(ctx, &param)
+}
+
+// Delete 删除
+func (*DictController) Delete(ctx *fiber.Ctx) error {
+	var ids vo.Ids
+	_ = ctx.ParamsParser(&ids)
+	return service.DictService.Delete(ctx, &ids.IDs)
 }

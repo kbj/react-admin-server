@@ -102,3 +102,13 @@ func (*DictService) Edit(ctx *fiber.Ctx, param *system.DictForm) error {
 		return r.Ok(ctx, r.Msg("保存成功"))
 	})
 }
+
+// Delete 删除
+func (*DictService) Delete(ctx *fiber.Ctx, param *[]uint) error {
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(&domain.Dict{}, param).Error; err != nil {
+			return err
+		}
+		return r.Ok(ctx, r.Msg("删除成功"))
+	})
+}

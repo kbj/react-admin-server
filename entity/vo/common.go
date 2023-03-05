@@ -15,3 +15,7 @@ type Page[T any] struct {
 	PageSize int   `json:"pageSize"` // 每页数据量
 	PageNum  int   `json:"pageNum"`  // 当前页数
 }
+
+type Ids struct {
+	IDs []uint `params:"ids"`
+}

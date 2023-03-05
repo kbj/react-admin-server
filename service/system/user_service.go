@@ -128,10 +128,8 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 // Delete 删除用户
 func (*UserService) Delete(ctx *fiber.Ctx, ids *[]uint) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
-		updates := tx.Table("t_user").Where("delete_at = 0 and id in ?", *ids).
-			Updates(map[string]any{"delete_at": time.Now().UnixMilli(), "delete_by": g.LoginUser.UserId(ctx)})
-		if updates.Error != nil || updates.RowsAffected != int64(len(*ids)) {
-			return consts.NewServiceError("删除失败")
+		if err := tx.Delete(&domain.User{}, ids).Error; err != nil {
+			return err
 		}
 		return r.Ok(ctx, r.Msg("删除成功"))
 	})
