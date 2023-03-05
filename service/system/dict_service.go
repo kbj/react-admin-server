@@ -75,3 +75,30 @@ func (*DictService) Add(ctx *fiber.Ctx, param *system.DictForm) error {
 		return r.Ok(ctx)
 	})
 }
+
+// Edit 编辑
+func (*DictService) Edit(ctx *fiber.Ctx, param *system.DictForm) error {
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		var dict domain.Dict
+		if err := tx.First(&dict, param.ID).Error; err != nil {
+			return err
+		} else if dict.DictType != param.DictType {
+			// 查询类型是否重复
+			var count int64
+			if err = tx.Model(domain.Dict{}).Where("dict_type = ?", param.DictType).Count(&count).Error; err != nil {
+				return err
+			} else if count > 0 {
+				return consts.NewServiceError("字典类型已重复")
+			}
+		}
+		dict.UpdateBy = g.LoginUser.UserId(ctx)
+		dict.UpdateAt = time.Now().UnixMilli()
+		dict.DictType = param.DictType
+		dict.DictName = param.DictName
+		dict.Enabled = *param.Enabled
+		if tx.Save(&dict).RowsAffected < 1 {
+			return consts.NewServiceError("更新失败")
+		}
+		return r.Ok(ctx, r.Msg("保存成功"))
+	})
+}

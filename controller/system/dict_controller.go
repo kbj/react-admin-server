@@ -8,6 +8,7 @@ import (
 	"react-admin-server/entity/vo/system"
 	"react-admin-server/service"
 	"react-admin-server/tool"
+	"react-admin-server/tool/r"
 )
 
 type DictController struct {
@@ -36,4 +37,16 @@ func (*DictController) Add(ctx *fiber.Ctx) error {
 		return err
 	}
 	return service.DictService.Add(ctx, &param)
+}
+
+// Edit 编辑
+func (*DictController) Edit(ctx *fiber.Ctx) error {
+	var param system.DictForm
+	_ = ctx.BodyParser(&param)
+	if err := tool.ValidateParams(&param); err != nil {
+		return err
+	} else if param.ID < 1 {
+		return r.Fail(ctx, "ID不能为空")
+	}
+	return service.DictService.Edit(ctx, &param)
 }

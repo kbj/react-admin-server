@@ -31,4 +31,5 @@ func (api *SystemApi) initDictApi() {
 	route.Get("/list", controller.DictController.List)
 	route.Get("/:id", controller.DictController.GetInfo)
 	route.Post("", controller.DictController.Add)
+	route.Put("", controller.DictController.Edit)
 }
