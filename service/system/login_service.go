@@ -9,7 +9,6 @@ import (
 	"github.com/gookit/goutil/arrutil"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
-	"react-admin-server/dao"
 	"react-admin-server/entity/domain"
 	"react-admin-server/entity/vo/system"
 	"react-admin-server/global/consts"
@@ -29,7 +28,7 @@ func (l *LoginService) Login(ctx *fiber.Ctx, param *system.LoginRequest) error {
 
 	// 查询对应用户信息
 	var user domain.User
-	if err := dao.User.SelectLoginUser(g.DbClient, &user, param.Username, param.Password); err != nil {
+	if err := g.DbClient.Where("username = ? and password = ?", param.Username, param.Password).First(&user).Error; err != nil {
 		_ = tool.LogDbError(err)
 		return consts.NewServiceError("用户名或密码错误")
 	}
