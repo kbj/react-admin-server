@@ -12,6 +12,7 @@ type User struct {
 	DeptId   uint         `json:"deptId,omitempty" gorm:"comment:部门ID"`
 	Mobile   string       `json:"mobile,omitempty" gorm:"comment:手机号;index;size:20"`
 	Gender   types.Gender `json:"gender,omitempty" gorm:"comment:性别;type:char;size:1"`
+	NickName string       `json:"nickName,omitempty" gorm:"comment:用户昵称;size:100"`
 	Avatar   string       `json:"avatar,omitempty" gorm:"comment:头像;size:200"`
 	Roles    []*Role      `json:"-" gorm:"many2many:user_role"`
 }

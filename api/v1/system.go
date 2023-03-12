@@ -27,10 +27,20 @@ func (api *SystemApi) initUserApi() {
 }
 
 func (api *SystemApi) initDictApi() {
+	// 字典管理
 	route := api.router.Group("dict")
 	route.Get("/list", controller.DictController.List)
 	route.Get("/:id", controller.DictController.GetInfo)
 	route.Post("/", controller.DictController.Add)
 	route.Put("/", controller.DictController.Edit)
 	route.Delete("/:ids", controller.DictController.Delete)
+
+	// 字典值管理
+	dataRoute := route.Group("data")
+	dataRoute.Get("/list", controller.DictController.DataList)
+	dataRoute.Get("/:id", controller.DictController.GetDataInfo)
+	dataRoute.Post("/", controller.DictController.DataAdd)
+	dataRoute.Put("/", controller.DictController.DataEdit)
+	dataRoute.Delete("/:ids", controller.DictController.DataDelete)
+	dataRoute.Get("/type/:dictType", controller.DictController.GetType)
 }

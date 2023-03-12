@@ -14,6 +14,8 @@ type UserSearch struct {
 	Mobile string `json:"mobile,omitempty"`
 	// 性别
 	Gender types.Gender `json:"gender,omitempty"`
+	// 昵称
+	NickName string `json:"nickName,omitempty"`
 }
 
 type UserRequest struct {
@@ -28,6 +30,8 @@ type UserRequest struct {
 	Password string `json:"password" validate:"required,min=8,max=64" comment:"密码"`
 	// 部门ID
 	DeptId uint `json:"deptId" validate:"numeric" comment:"部门"`
+	// 昵称
+	NickName string `json:"nickName" validate:"max=100" comment:"用户昵称"`
 	// 角色ID
 	Roles *[]uint `json:"roles"`
 }

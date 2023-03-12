@@ -27,6 +27,9 @@ func (*UserService) List(ctx *fiber.Ctx, param *system.UserSearch) error {
 	if param.Username != "" {
 		db.Where("username like ?", "%"+param.Username+"%")
 	}
+	if param.NickName != "" {
+		db.Where("nick_name like ?", "%"+param.NickName+"%")
+	}
 	if param.Mobile != "" {
 		db.Where("mobile = ?", param.Mobile)
 	}
@@ -67,6 +70,7 @@ func (*UserService) Add(ctx *fiber.Ctx, param *system.UserRequest) error {
 		newUser.DeptId = param.DeptId
 		newUser.Mobile = param.Mobile
 		newUser.Gender = param.Gender
+		newUser.NickName = param.NickName
 		newUser.CreateBy = g.LoginUser.UserId(ctx)
 		newUser.CreateAt = time.Now().UnixMilli()
 		newUser.UpdateBy = g.LoginUser.UserId(ctx)
@@ -104,6 +108,7 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 		user.DeptId = param.DeptId
 		user.Mobile = param.Mobile
 		user.Gender = param.Gender
+		user.NickName = param.NickName
 		user.UpdateBy = g.LoginUser.UserId(ctx)
 		user.UpdateAt = time.Now().UnixMilli()
 		db := tx.Omit("password").Save(&user)
