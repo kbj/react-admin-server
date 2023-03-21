@@ -27,7 +27,7 @@ type UserRequest struct {
 	// 性别
 	Gender types.Gender `json:"gender" validate:"max=1" comment:"性别"`
 	// 密码
-	Password string `json:"password" validate:"required,min=8,max=64" comment:"密码"`
+	Password string `json:"password" validate:"omitempty,min=8,max=64" comment:"密码"`
 	// 部门ID
 	DeptId uint `json:"deptId" validate:"numeric" comment:"部门"`
 	// 昵称

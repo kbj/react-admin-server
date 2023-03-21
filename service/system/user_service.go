@@ -97,21 +97,25 @@ func (*UserService) Add(ctx *fiber.Ctx, param *system.UserRequest) error {
 
 // Edit 修改用户
 func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
+	req := *param
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		var user domain.User
-		err := tx.First(&user, param.ID).Error
+		err := tx.First(&user, req.ID).Error
 		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 			return r.Fail(ctx, "参数有误")
 		}
 
 		// 保存编辑
-		user.DeptId = param.DeptId
-		user.Mobile = param.Mobile
-		user.Gender = param.Gender
-		user.NickName = param.NickName
+		user.DeptId = req.DeptId
+		user.Mobile = req.Mobile
+		user.Gender = req.Gender
+		user.NickName = req.NickName
+		if req.Password != "" {
+			user.Password = tool.Md5Encode(user.Username+req.Password, 512)
+		}
 		user.UpdateBy = g.LoginUser.UserId(ctx)
 		user.UpdateAt = time.Now().UnixMilli()
-		db := tx.Omit("password").Save(&user)
+		db := tx.Save(&user)
 		if db.Error != nil || db.RowsAffected < 1 {
 			_ = tool.LogDbError(db.Error)
 			return consts.NewServiceError("保存失败")
@@ -121,9 +125,11 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 		if err = tx.Model(&user).Association("Roles").Clear(); err != nil {
 			return err
 		}
-		for _, roleId := range *param.Roles {
-			if err = tx.Model(&user).Association("Roles").Append(&domain.Role{Common: domain.Common{ID: roleId}}); err != nil {
-				return err
+		if req.Roles != nil {
+			for _, roleId := range *req.Roles {
+				if err = tx.Model(&user).Association("Roles").Append(&domain.Role{Common: domain.Common{ID: roleId}}); err != nil {
+					return err
+				}
 			}
 		}
 		return r.Ok(ctx, r.Msg("保存成功"))

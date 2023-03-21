@@ -36,6 +36,8 @@ func (*UserController) Add(ctx *fiber.Ctx) error {
 	_ = ctx.BodyParser(&param)
 	if err := tool.ValidateParams(&param); err != nil {
 		return err
+	} else if param.Password == "" {
+		return r.Fail(ctx, "密码不能为空")
 	}
 	return service.UserService.Add(ctx, &param)
 }
