@@ -29,7 +29,7 @@ func (*DictService) List(ctx *fiber.Ctx, param *system.DictSearch) error {
 	if param.DictType != "" {
 		db.Where("dict_type = ?", param.DictType)
 	}
-	if param.Enabled != nil {
+	if param.Enabled != "" {
 		db.Where("enabled = ?", param.Enabled)
 	}
 	list, err := tool.SelectPageList[domain.Dict](ctx, db)
@@ -63,7 +63,7 @@ func (*DictService) Add(ctx *fiber.Ctx, param *system.DictForm) error {
 		dict := domain.Dict{
 			DictName: param.DictName,
 			DictType: param.DictType,
-			Enabled:  *param.Enabled,
+			Enabled:  param.Enabled,
 		}
 		dict.CreateBy = g.LoginUser.UserId(ctx)
 		dict.CreateAt = time.Now().UnixMilli()
@@ -95,7 +95,7 @@ func (*DictService) Edit(ctx *fiber.Ctx, param *system.DictForm) error {
 		dict.UpdateAt = time.Now().UnixMilli()
 		dict.DictType = param.DictType
 		dict.DictName = param.DictName
-		dict.Enabled = *param.Enabled
+		dict.Enabled = param.Enabled
 		if tx.Save(&dict).RowsAffected < 1 {
 			return consts.NewServiceError("更新失败")
 		}
@@ -129,8 +129,8 @@ func (*DictService) DataList(ctx *fiber.Ctx, param *system.DictDataSearch) error
 	if param.DictLabel != "" {
 		db.Where("dict_label like ?", "%"+param.DictLabel+"%")
 	}
-	if param.Enabled != nil {
-		db.Where("enabled = ?", *param.Enabled)
+	if param.Enabled != "" {
+		db.Where("enabled = ?", param.Enabled)
 	}
 
 	list, err := tool.SelectPageList[domain.DictData](ctx, db)
@@ -225,7 +225,7 @@ func (*DictService) DataDelete(ctx *fiber.Ctx, param *[]uint) error {
 // GetType 通用查询字典类型的列表信息
 func (*DictService) GetType(ctx *fiber.Ctx, dictType string) error {
 	var dictList []domain.DictData
-	if err := g.DbClient.Where("dict_type = ? and enabled = true", dictType).Order("dict_sort, id").Find(&dictList).Error; err != nil {
+	if err := g.DbClient.Where("dict_type = ? and enabled = '1'", dictType).Order("dict_sort, id").Find(&dictList).Error; err != nil {
 		return err
 	}
 	return r.Ok(ctx, r.Data(&dictList))
