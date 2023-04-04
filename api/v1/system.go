@@ -15,6 +15,7 @@ type SystemApi struct {
 func (api *SystemApi) Init() {
 	api.initUserApi() // 初始化用户模块
 	api.initDictApi() // 初始化字典模块
+	api.initDeptApi() // 初始化部门模块
 }
 
 func (api *SystemApi) initUserApi() {
@@ -43,4 +44,13 @@ func (api *SystemApi) initDictApi() {
 	dataRoute.Put("/", controller.DictController.DataEdit)
 	dataRoute.Delete("/:ids", controller.DictController.DataDelete)
 	dataRoute.Get("/type/:dictType", controller.DictController.GetType)
+}
+
+func (api *SystemApi) initDeptApi() {
+	route := api.router.Group("dept")
+	route.Get("/list", controller.DeptController.List)
+	route.Get("/:id", controller.DeptController.GetInfo)
+	route.Post("/", controller.DeptController.Add)
+	route.Put("/", controller.DeptController.Edit)
+	route.Delete("/:ids", controller.DeptController.Delete)
 }

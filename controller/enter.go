@@ -9,4 +9,5 @@ var (
 	LoginController = new(system.LoginController)
 	UserController  = new(system.UserController)
 	DictController  = new(system.DictController)
+	DeptController  = new(system.DeptController)
 )

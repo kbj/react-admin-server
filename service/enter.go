@@ -9,4 +9,5 @@ var (
 	LoginService = new(system.LoginService)
 	UserService  = new(system.UserService)
 	DictService  = new(system.DictService)
+	DeptService  = new(system.DeptService)
 )
