@@ -107,13 +107,13 @@ func (*DeptService) Delete(ctx *fiber.Ctx, param *[]uint) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		sql := `
 			with recursive tmp as (
-				select * from t_dept where id in ?
+				select * from t_dept where id = ?
 				union ALL
 				select t1.* from t_dept t1, tmp where t1.parent_id = tmp.id and t1.delete_at > 0
 			)
-			update t_dept set delete_at = now() and delete_by = ? where id in (select id from tmp)
+			update t_dept set delete_at = ?, delete_by = ? where id in (select id from tmp)
 		`
-		db := tx.Exec(sql, param, g.LoginUser.UserId(ctx))
+		db := tx.Exec(sql, (*param)[0], time.Now().UnixMilli(), g.LoginUser.UserId(ctx))
 		if db.RowsAffected > 0 {
 			return r.Ok(ctx, r.Msg("删除成功"))
 		}
