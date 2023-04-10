@@ -16,6 +16,7 @@ func (api *SystemApi) Init() {
 	api.initUserApi() // 初始化用户模块
 	api.initDictApi() // 初始化字典模块
 	api.initDeptApi() // 初始化部门模块
+	api.initMenuApi() // 初始化菜单模块
 }
 
 func (api *SystemApi) initUserApi() {
@@ -53,4 +54,13 @@ func (api *SystemApi) initDeptApi() {
 	route.Post("/", controller.DeptController.Add)
 	route.Put("/", controller.DeptController.Edit)
 	route.Delete("/:ids", controller.DeptController.Delete)
+}
+
+func (api *SystemApi) initMenuApi() {
+	route := api.router.Group("menu")
+	route.Get("/list", controller.MenuController.List)
+	route.Get("/:id", controller.MenuController.GetInfo)
+	route.Post("/", controller.MenuController.Add)
+	route.Put("/", controller.MenuController.Edit)
+	route.Delete("/:ids", controller.MenuController.Delete)
 }

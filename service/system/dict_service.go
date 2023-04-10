@@ -104,7 +104,7 @@ func (*DictService) Edit(ctx *fiber.Ctx, param *system.DictForm) error {
 }
 
 // Delete 删除
-func (*DictService) Delete(ctx *fiber.Ctx, param *[]uint) error {
+func (*DictService) Delete(ctx *fiber.Ctx, param *[]int64) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		for _, id := range *param {
 			var entity domain.Dict
@@ -207,7 +207,7 @@ func (*DictService) DataEdit(ctx *fiber.Ctx, param *system.DictDataForm) error {
 }
 
 // DataDelete 删除字典值
-func (*DictService) DataDelete(ctx *fiber.Ctx, param *[]uint) error {
+func (*DictService) DataDelete(ctx *fiber.Ctx, param *[]int64) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		// 删除字典
 		var count int64

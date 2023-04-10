@@ -17,5 +17,5 @@ type Page[T any] struct {
 }
 
 type Ids struct {
-	IDs []uint `params:"ids"`
+	IDs []int64 `params:"ids"`
 }

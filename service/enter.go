@@ -10,4 +10,5 @@ var (
 	UserService  = new(system.UserService)
 	DictService  = new(system.DictService)
 	DeptService  = new(system.DeptService)
+	MenuService  = new(system.MenuService)
 )

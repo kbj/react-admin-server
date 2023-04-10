@@ -137,7 +137,7 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 }
 
 // Delete 删除用户
-func (*UserService) Delete(ctx *fiber.Ctx, ids *[]uint) error {
+func (*UserService) Delete(ctx *fiber.Ctx, ids *[]int64) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Delete(&domain.User{}, ids).Error; err != nil {
 			return err

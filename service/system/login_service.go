@@ -87,7 +87,7 @@ func (l *LoginService) Menus(ctx *fiber.Ctx) error {
 				WHERE
 					t1.delete_at = 0 
 					AND t1.menu_type <> 'B' 
-					AND t1.enabled = TRUE UNION ALL
+					AND t1.enabled = '1' UNION ALL
 				SELECT
 					t1.* 
 				FROM
@@ -96,7 +96,7 @@ func (l *LoginService) Menus(ctx *fiber.Ctx) error {
 					t1.parent_id = test.id 
 					AND t1.delete_at = 0 
 					AND t1.menu_type <> 'B' 
-					AND t1.enabled = TRUE 
+					AND t1.enabled = '1' 
 			)
 			SELECT * FROM test ORDER BY test.order_num
 		`
