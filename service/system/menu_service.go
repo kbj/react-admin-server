@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"react-admin-server/entity/domain"
 	"react-admin-server/global/g"
+	"react-admin-server/global/types"
 	"react-admin-server/tool/r"
 	"time"
 )
@@ -65,6 +66,9 @@ func (*MenuService) Edit(ctx *fiber.Ctx, param *domain.Menu) error {
 		param.CreateAt = entity.CreateAt
 		param.UpdateBy = g.LoginUser.UserId(ctx)
 		param.UpdateAt = time.Now().UnixMilli()
+		if param.MenuType == types.Button {
+			param.Enabled = entity.Enabled
+		}
 		if err := tx.Save(param).Error; err != nil {
 			return err
 		}

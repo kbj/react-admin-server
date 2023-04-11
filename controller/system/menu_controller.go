@@ -27,7 +27,7 @@ func (*MenuController) List(ctx *fiber.Ctx) error {
 // GetInfo 查询
 func (*MenuController) GetInfo(ctx *fiber.Ctx) error {
 	id, _ := ctx.ParamsInt("id", 0)
-	return service.DeptService.GetInfo(ctx, id)
+	return service.MenuService.GetInfo(ctx, id)
 }
 
 // Add 新增
