@@ -11,4 +11,5 @@ var (
 	DictController  = new(system.DictController)
 	DeptController  = new(system.DeptController)
 	MenuController  = new(system.MenuController)
+	RoleController  = new(system.RoleController)
 )

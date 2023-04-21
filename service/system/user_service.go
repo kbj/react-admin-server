@@ -139,8 +139,19 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 // Delete 删除用户
 func (*UserService) Delete(ctx *fiber.Ctx, ids *[]int64) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(&domain.User{}, ids).Error; err != nil {
-			return err
+		for _, i := range *ids {
+			var entity domain.User
+			if err := tx.First(&entity, i).Error; err != nil {
+				return err
+			}
+
+			// 删除用户角色关联
+			if err := tool.LogDbError(tx.Model(&entity).Association("Roles").Clear()); err != nil {
+				return consts.NewServiceError("删除失败")
+			}
+			if err := tool.LogDbError(tx.Delete(&entity).Error); err != nil {
+				return consts.NewServiceError("删除失败")
+			}
 		}
 		return r.Ok(ctx, r.Msg("删除成功"))
 	})

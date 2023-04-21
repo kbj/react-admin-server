@@ -152,7 +152,7 @@ func (*LoginService) GetRoleKeys(user *domain.User) *[]string {
 	}
 
 	roleKeys := lo.Map[*domain.Role, string](roles, func(item *domain.Role, index int) string {
-		return item.RoleKey
+		return *item.RoleKey
 	})
 	return &roleKeys
 }
