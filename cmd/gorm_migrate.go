@@ -18,6 +18,8 @@ func initTables(db *gorm.DB) {
 		domain.Dept{},
 		domain.Dict{},
 		domain.DictData{},
+		domain.RoleMenu{},
+		domain.UserRole{},
 	)
 	if err != nil {
 		g.Logger.Error("自动建表失败", zap.Error(err))

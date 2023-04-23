@@ -73,25 +73,28 @@ func (*RoleService) Add(ctx *fiber.Ctx, param *system.RoleForm) error {
 				CreateAt: time.Now().UnixMilli(),
 				CreateBy: g.LoginUser.UserId(ctx),
 			},
-			RoleName:      param.RoleName,
-			RoleKey:       param.RoleKey,
-			CheckStrictly: param.CheckStrictly,
-			Enabled:       param.Enabled,
-			OrderNum:      param.OrderNum,
+			RoleName: param.RoleName,
+			RoleKey:  param.RoleKey,
+			Enabled:  param.Enabled,
+			OrderNum: param.OrderNum,
+		}
+		if err := tx.Create(&entity).Error; err != nil {
+			return err
 		}
 
 		// 菜单
 		if param.Menus != nil && len(*param.Menus) > 0 {
-			var menus []domain.Menu
-			if err := tx.Select("id").Find(&menus, *param.Menus).Error; err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-				return err
+			var menus domain.RoleMenu
+			menus.RoleId = entity.ID
+
+			for _, id := range *param.Menus {
+				menus.MenuId = id
+				if err := tx.Create(&menus).Error; err != nil {
+					return err
+				}
 			}
-			entity.Menus = &menus
 		}
 
-		if err := tx.Save(&entity).Error; err != nil {
-			return err
-		}
 		return r.Ok(ctx, r.Msg("保存成功"))
 	})
 }
@@ -103,26 +106,32 @@ func (*RoleService) Edit(ctx *fiber.Ctx, param *system.RoleForm) error {
 		if err := tx.First(&entity, param.ID).Error; err != nil {
 			return err
 		}
+
 		// 清空菜单关联
-		if err := tx.Model(&entity).Association("Menus").Clear(); err != nil {
+		if err := tx.Where("role_id = ?", param.ID).Delete(&domain.RoleMenu{}).Error; err != nil {
 			return err
 		}
 
+		// 更新角色
 		entity.UpdateBy = g.LoginUser.UserId(ctx)
 		entity.UpdateAt = time.Now().UnixMilli()
 		entity.RoleName = param.RoleName
-		entity.CheckStrictly = param.CheckStrictly
 		entity.Enabled = param.Enabled
 		entity.OrderNum = param.OrderNum
-		if param.Menus != nil && len(*param.Menus) > 0 {
-			var menus []domain.Menu
-			if err := tx.Select("id").Find(&menus, *param.Menus).Error; err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-				return err
-			}
-			entity.Menus = &menus
-		}
-		if err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Users").Updates(&entity).Error; err != nil {
+		if err := tx.Save(&entity).Error; err != nil {
 			return err
+		}
+		// 更新菜单
+		if param.Menus != nil && len(*param.Menus) > 0 {
+			var menus domain.RoleMenu
+			menus.RoleId = entity.ID
+
+			for _, id := range *param.Menus {
+				menus.MenuId = id
+				if err := tx.Create(&menus).Error; err != nil {
+					return err
+				}
+			}
 		}
 		return r.Ok(ctx, r.Msg("保存成功"))
 	})
@@ -131,21 +140,23 @@ func (*RoleService) Edit(ctx *fiber.Ctx, param *system.RoleForm) error {
 // Delete 删除
 func (*RoleService) Delete(ctx *fiber.Ctx, param *[]int64) error {
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
-		// 需要检查角色是否有被用户关联
 		for _, i := range *param {
-			var entity domain.Role
-			if err := tool.LogDbError(tx.Preload("Users").First(&entity, i).Error); err != nil {
-				return err
-			}
-			if entity.Users != nil && len(*entity.Users) > 0 {
+			// 需要检查角色是否有被用户关联
+			var userNum int64
+			tx.Model(domain.UserRole{}).Where("role_id=?", i).Count(&userNum)
+			if userNum > 0 {
+				var entity domain.Role
+				if err := tool.LogDbError(tx.First(&entity, i).Error); err != nil {
+					return err
+				}
 				return consts.NewServiceError(fmt.Sprintf("%s 已分配,不能删除", *entity.RoleName))
 			}
 
 			// 删除本体与菜单关联
-			if err := tool.LogDbError(tx.Model(&entity).Association("Menus").Clear()); err != nil {
+			if err := tool.LogDbError(tx.Where("role_id = ?", i).Delete(&domain.RoleMenu{}).Error); err != nil {
 				return consts.NewServiceError("删除失败")
 			}
-			if err := tool.LogDbError(tx.Delete(&entity).Error); err != nil {
+			if err := tool.LogDbError(tx.Delete(&domain.RoleMenu{}, i).Error); err != nil {
 				return consts.NewServiceError("删除失败")
 			}
 		}

@@ -83,7 +83,7 @@ func (l *LoginService) Menus(ctx *fiber.Ctx) error {
 					t1.* 
 				FROM
 					t_menu t1
-					JOIN ( SELECT tt2.menu_id FROM t_user_role tt1 JOIN t_role_menu tt2 ON tt1.role_id = tt2.role_id WHERE tt1.user_id = ? ) t2 ON t2.menu_id = t1.id 
+					JOIN ( SELECT DISTINCT tt2.menu_id FROM t_user_role tt1 JOIN t_role_menu tt2 ON tt1.role_id = tt2.role_id WHERE tt1.user_id = ? ) t2 ON t2.menu_id = t1.id 
 				WHERE
 					t1.delete_at = 0 
 					AND t1.menu_type <> 'B' 

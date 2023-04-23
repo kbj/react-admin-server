@@ -10,11 +10,10 @@ type RoleSearch struct {
 }
 
 type RoleForm struct {
-	ID            *uint   `json:"id"`
-	Menus         *[]uint `json:"menus"`
-	RoleName      *string `json:"roleName" validate:"required,min=1,max=20" comment:"角色名称"`
-	RoleKey       *string `json:"roleKey" validate:"required,min=1,max=100" comment:"权限字符"`
-	Enabled       *string `json:"enabled"`
-	CheckStrictly *bool   `json:"checkStrictly"`
-	OrderNum      *int    `json:"orderNum"`
+	ID       *uint   `json:"id"`
+	Menus    *[]uint `json:"menus"`
+	RoleName *string `json:"roleName" validate:"required,min=1,max=20" comment:"角色名称"`
+	RoleKey  *string `json:"roleKey" validate:"required,min=1,max=100" comment:"权限字符"`
+	Enabled  *string `json:"enabled"`
+	OrderNum *int    `json:"orderNum"`
 }
