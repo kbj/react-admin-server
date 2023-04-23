@@ -32,3 +32,8 @@ func (*LoginController) UserInfo(ctx *fiber.Ctx) error {
 func (*LoginController) Menus(ctx *fiber.Ctx) error {
 	return service.LoginService.Menus(ctx)
 }
+
+// RolesList 全体角色列表
+func (*LoginController) RolesList(ctx *fiber.Ctx) error {
+	return service.LoginService.RolesList(ctx)
+}

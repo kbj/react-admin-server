@@ -36,6 +36,9 @@ func (*UserService) List(ctx *fiber.Ctx, param *system.UserSearch) error {
 	if param.Gender != "" {
 		db.Where("gender = ?", param.Gender)
 	}
+	if param.Enabled != "" {
+		db.Where("enabled = ?", param.Enabled)
+	}
 	page, err := tool.SelectPageList[domain.User](ctx, db)
 	if err != nil {
 		return err
@@ -71,6 +74,8 @@ func (*UserService) Add(ctx *fiber.Ctx, param *system.UserRequest) error {
 		newUser.Mobile = param.Mobile
 		newUser.Gender = param.Gender
 		newUser.NickName = param.NickName
+		newUser.Email = param.Email
+		newUser.Enabled = param.Enabled
 		newUser.CreateBy = g.LoginUser.UserId(ctx)
 		newUser.CreateAt = time.Now().UnixMilli()
 		newUser.UpdateBy = g.LoginUser.UserId(ctx)
@@ -83,8 +88,10 @@ func (*UserService) Add(ctx *fiber.Ctx, param *system.UserRequest) error {
 
 		// 保存角色
 		if param.Roles != nil && len(*param.Roles) > 0 {
+			entity := domain.UserRole{UserId: newUser.ID}
 			for _, roleId := range *param.Roles {
-				if err := tx.Model(&newUser).Association("Roles").Append(&domain.Role{Common: domain.Common{ID: roleId}}); err != nil {
+				entity.RoleId = roleId
+				if err := tx.Create(&entity).Error; err != nil {
 					return err
 				}
 			}
@@ -100,9 +107,8 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 	req := *param
 	return g.DbClient.Transaction(func(tx *gorm.DB) error {
 		var user domain.User
-		err := tx.First(&user, req.ID).Error
-		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-			return r.Fail(ctx, "参数有误")
+		if err := tool.LogDbError(tx.First(&user, req.ID).Error); err != nil {
+			return consts.NewServiceError("参数有误")
 		}
 
 		// 保存编辑
@@ -110,25 +116,27 @@ func (*UserService) Edit(ctx *fiber.Ctx, param *system.UserRequest) error {
 		user.Mobile = req.Mobile
 		user.Gender = req.Gender
 		user.NickName = req.NickName
+		user.Enabled = req.Enabled
+		user.Email = req.Email
 		if req.Password != "" {
 			user.Password = tool.Md5Encode(user.Username+req.Password, 512)
 		}
 		user.UpdateBy = g.LoginUser.UserId(ctx)
 		user.UpdateAt = time.Now().UnixMilli()
-		db := tx.Save(&user)
-		if db.Error != nil || db.RowsAffected < 1 {
-			_ = tool.LogDbError(db.Error)
+		if db := tx.Save(&user); tool.LogDbError(db.Error) != nil || db.RowsAffected < 1 {
 			return consts.NewServiceError("保存失败")
 		}
 
 		// 保存角色
-		if err = tx.Model(&user).Association("Roles").Clear(); err != nil {
-			return err
+		if err := tx.Where("user_id = ?", req.ID).Delete(&domain.UserRole{}).Error; tool.LogDbError(err) != nil {
+			return consts.NewServiceError("保存失败")
 		}
-		if req.Roles != nil {
-			for _, roleId := range *req.Roles {
-				if err = tx.Model(&user).Association("Roles").Append(&domain.Role{Common: domain.Common{ID: roleId}}); err != nil {
-					return err
+		if req.Roles != nil && len(*req.Roles) > 0 {
+			entity := domain.UserRole{UserId: uint(req.ID)}
+			for _, roleId := range *param.Roles {
+				entity.RoleId = roleId
+				if err := tool.LogDbError(tx.Create(&entity).Error); err != nil {
+					return consts.NewServiceError("保存失败")
 				}
 			}
 		}
@@ -146,9 +154,10 @@ func (*UserService) Delete(ctx *fiber.Ctx, ids *[]int64) error {
 			}
 
 			// 删除用户角色关联
-			if err := tool.LogDbError(tx.Model(&entity).Association("Roles").Clear()); err != nil {
-				return consts.NewServiceError("删除失败")
+			if err := tx.Where("user_id = ?", i).Delete(&domain.UserRole{}).Error; tool.LogDbError(err) != nil {
+				return consts.NewServiceError("保存失败")
 			}
+
 			if err := tool.LogDbError(tx.Delete(&entity).Error); err != nil {
 				return consts.NewServiceError("删除失败")
 			}

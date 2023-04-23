@@ -5,8 +5,10 @@ package system
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
 	"react-admin-server/entity/vo"
 	"react-admin-server/entity/vo/system"
+	"react-admin-server/global/g"
 	"react-admin-server/service"
 	"react-admin-server/tool"
 	"react-admin-server/tool/r"
@@ -58,5 +60,10 @@ func (*UserController) Edit(ctx *fiber.Ctx) error {
 func (*UserController) Delete(ctx *fiber.Ctx) error {
 	var params vo.Ids
 	_ = ctx.ParamsParser(&params)
+
+	contains := lo.Contains[int64](params.IDs, int64(g.LoginUser.UserId(ctx)))
+	if contains {
+		return r.Fail(ctx, "当前用户不能删除")
+	}
 	return service.UserService.Delete(ctx, &params.IDs)
 }

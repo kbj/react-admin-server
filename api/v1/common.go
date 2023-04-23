@@ -17,4 +17,5 @@ func (api *CommonApi) Init() {
 	route.Post("/login", controller.LoginController.Login)       // 登录接口
 	route.Get("/user-info", controller.LoginController.UserInfo) // 查询登录用户信息
 	route.Get("/menus", controller.LoginController.Menus)        // 查询登录用户菜单信息
+	route.Get("/roles", controller.LoginController.RolesList)    // 查询系统所有角色信息
 }

@@ -14,5 +14,6 @@ type User struct {
 	Gender   types.Gender `json:"gender,omitempty" gorm:"comment:性别;type:char;size:1"`
 	NickName string       `json:"nickName,omitempty" gorm:"comment:用户昵称;size:100"`
 	Avatar   string       `json:"avatar,omitempty" gorm:"comment:头像;size:200"`
-	Roles    []*Role      `json:"-" gorm:"many2many:user_role"`
+	Enabled  string       `json:"enabled" gorm:"size:1;comment:是否启用;not null;default:1;type:char"`
+	Email    string       `json:"email" gorm:"size:200;comment:邮箱;"`
 }

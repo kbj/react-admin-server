@@ -156,3 +156,12 @@ func (*LoginService) GetRoleKeys(user *domain.User) *[]string {
 	})
 	return &roleKeys
 }
+
+// RolesList 全体角色列表
+func (*LoginService) RolesList(ctx *fiber.Ctx) error {
+	var list []domain.Role
+	if err := tool.LogDbError(g.DbClient.Where("enabled = '1'").Order("order_num").Find(&list).Error); err != nil {
+		return consts.NewServiceError("查询失败")
+	}
+	return r.Ok(ctx, r.Data(&list))
+}
