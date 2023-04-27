@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gookit/goutil/arrutil"
-	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"react-admin-server/entity/domain"
 	"react-admin-server/entity/vo/system"
@@ -145,15 +144,13 @@ func (*LoginService) generateJwtToken(users *system.LoginUserResponse) (string, 
 
 // GetRoleKeys 查询用户的角色Key
 func (*LoginService) GetRoleKeys(user *domain.User) *[]string {
-	var roles []*domain.Role
-	err := g.DbClient.Model(user).Association("Roles").Find(&roles)
+	var roleKeys []string
+	err := g.DbClient.Model(&domain.Role{}).Distinct("t_role.role_key").
+		Joins("join t_user_role on t_user_role.role_id = t_role.id and t_user_role.user_id = ?", user.ID).
+		Where("t_role.enabled = '1'").Scan(&roleKeys).Error
 	if err != nil {
 		g.Logger.Error("查询角色Key失败", zap.Error(err))
 	}
-
-	roleKeys := lo.Map[*domain.Role, string](roles, func(item *domain.Role, index int) string {
-		return *item.RoleKey
-	})
 	return &roleKeys
 }
 
