@@ -6,7 +6,6 @@ package system
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/gookit/goutil/arrutil"
 	"go.uber.org/zap"
 	"react-admin-server/entity/domain"
 	"react-admin-server/entity/vo/system"
@@ -51,7 +50,7 @@ func (l *LoginService) Login(ctx *fiber.Ctx, param *system.LoginRequest) error {
 func (l *LoginService) Info(ctx *fiber.Ctx) error {
 	user := g.LoginUser.User(ctx)
 	resp := map[string]any{
-		"roles": l.GetRoleKeys(user), // 查询所有的角色信息
+		"roles": l.GetRoleKeys(user.ID), // 查询所有的角色信息
 		"user": &system.LoginUserResponse{
 			ID:       user.ID,
 			CreateAt: user.CreateAt,
@@ -61,6 +60,7 @@ func (l *LoginService) Info(ctx *fiber.Ctx) error {
 			Gender:   user.Gender,
 			Avatar:   user.Avatar,
 		},
+		"permissions": l.GetPermissions(user),
 	}
 	return r.Ok(ctx, r.Data(resp))
 }
@@ -68,11 +68,9 @@ func (l *LoginService) Info(ctx *fiber.Ctx) error {
 // Menus 用户菜单信息
 func (l *LoginService) Menus(ctx *fiber.Ctx) error {
 	user := g.LoginUser.User(ctx)
-	roleKeys := l.GetRoleKeys(user)
-	isAdmin := arrutil.Contains(*roleKeys, "admin")
 
 	var menus []*domain.Menu
-	if isAdmin {
+	if user.IsAdmin() {
 		// 管理员角色查询全部
 		g.DbClient.Model(domain.Menu{}).Where("menu_type <> 'B'").Find(&menus)
 	} else {
@@ -143,10 +141,10 @@ func (*LoginService) generateJwtToken(users *system.LoginUserResponse) (string, 
 }
 
 // GetRoleKeys 查询用户的角色Key
-func (*LoginService) GetRoleKeys(user *domain.User) *[]string {
+func (*LoginService) GetRoleKeys(userId uint) *[]string {
 	var roleKeys []string
 	err := g.DbClient.Model(&domain.Role{}).Distinct("t_role.role_key").
-		Joins("join t_user_role on t_user_role.role_id = t_role.id and t_user_role.user_id = ?", user.ID).
+		Joins("join t_user_role on t_user_role.role_id = t_role.id and t_user_role.user_id = ?", userId).
 		Where("t_role.enabled = '1'").Scan(&roleKeys).Error
 	if err != nil {
 		g.Logger.Error("查询角色Key失败", zap.Error(err))
@@ -161,4 +159,21 @@ func (*LoginService) RolesList(ctx *fiber.Ctx) error {
 		return consts.NewServiceError("查询失败")
 	}
 	return r.Ok(ctx, r.Data(&list))
+}
+
+// GetPermissions 查询用户的权限字符
+func (*LoginService) GetPermissions(user *domain.User) *[]string {
+	var permissions []string
+	if user.IsAdmin() {
+		permissions = append(permissions, "*:*:*")
+	} else {
+		// 非管理员查询权限字符
+		err := g.DbClient.Model(&domain.Menu{}).Distinct("t_menu.permission_flag").
+			Joins("join t_role_menu on t_role_menu.menu_id = t_menu.id").
+			Joins("join t_role on t_role.id = t_role_menu.role_id and t_role.enabled = '1' and t_role.delete_at = 0").
+			Joins("join t_user_role on t_user_role.role_id = t_role.id and t_user_role.user_id = ?", user.ID).
+			Where("t_menu.enabled = '1'").Scan(&permissions).Error
+		_ = tool.LogDbError(err)
+	}
+	return &permissions
 }

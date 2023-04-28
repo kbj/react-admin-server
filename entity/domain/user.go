@@ -17,3 +17,8 @@ type User struct {
 	Enabled  string       `json:"enabled" gorm:"size:1;comment:是否启用;not null;default:1;type:char"`
 	Email    string       `json:"email" gorm:"size:200;comment:邮箱;"`
 }
+
+// IsAdmin 检查是否是管理员
+func (u *User) IsAdmin() bool {
+	return u.ID == 1
+}
