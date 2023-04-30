@@ -26,7 +26,7 @@ func (l *LoginService) Login(ctx *fiber.Ctx, param *system.LoginRequest) error {
 
 	// 查询对应用户信息
 	var user domain.User
-	if err := g.DbClient.Where("username = ? and password = ?", param.Username, param.Password).First(&user).Error; err != nil {
+	if err := g.DbClient.Where("username = ? and password = ? and enabled = '1'", param.Username, param.Password).First(&user).Error; err != nil {
 		_ = tool.LogDbError(err)
 		return consts.NewServiceError("用户名或密码错误")
 	}
@@ -59,6 +59,9 @@ func (l *LoginService) Info(ctx *fiber.Ctx) error {
 			Mobile:   user.Mobile,
 			Gender:   user.Gender,
 			Avatar:   user.Avatar,
+			DeptId:   user.DeptId,
+			NickName: user.NickName,
+			Email:    user.Email,
 		},
 		"permissions": l.GetPermissions(user),
 	}

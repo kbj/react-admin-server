@@ -20,4 +20,7 @@ type LoginUserResponse struct {
 	Mobile   string       `json:"mobile,omitempty"`
 	Gender   types.Gender `json:"gender,omitempty"`
 	Avatar   string       `json:"avatar,omitempty"`
+	DeptId   uint         `json:"deptId,omitempty"`
+	NickName string       `json:"nickName,omitempty"`
+	Email    string       `json:"email,omitempty"`
 }
