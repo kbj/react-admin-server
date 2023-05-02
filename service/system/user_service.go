@@ -39,6 +39,9 @@ func (*UserService) List(ctx *fiber.Ctx, param *system.UserSearch) error {
 	if param.Enabled != "" {
 		db.Where("enabled = ?", param.Enabled)
 	}
+	if param.DeptId > 0 {
+		db.Where("dept_id = ?", param.DeptId)
+	}
 	page, err := tool.SelectPageList[domain.User](ctx, db)
 	if err != nil {
 		return err

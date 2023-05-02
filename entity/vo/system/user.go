@@ -18,6 +18,8 @@ type UserSearch struct {
 	NickName string `json:"nickName,omitempty"`
 	// 是否启用
 	Enabled string `json:"enabled"`
+	// 部门ID
+	DeptId uint `json:"deptId,omitempty"`
 }
 
 type UserRequest struct {
