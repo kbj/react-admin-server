@@ -1,7 +1,7 @@
-// Package system 登录相关的Service
+// Package common 登录相关的Service
 // @author: kbj
 // @date: 2023/2/3
-package system
+package common
 
 import (
 	"github.com/gofiber/fiber/v2"

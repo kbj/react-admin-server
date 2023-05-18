@@ -70,6 +70,7 @@ func addDefault(v *viper.Viper) {
 	v.SetDefault("system.port", "8080")                       // 启动端口
 	v.SetDefault("system.project-name", "react-admin-server") // 项目名称
 	v.SetDefault("system.body-limit", 100)                    // 最大传输大小
+	v.SetDefault("system.upload-path", "./uploads")           // 附件上传路径
 
 	v.SetDefault("log.path", "./logs")         // 日志保存路径
 	v.SetDefault("log.console-level", "debug") // 控制台日志级别

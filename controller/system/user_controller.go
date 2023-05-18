@@ -6,6 +6,7 @@ package system
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
+	"react-admin-server/entity/domain"
 	"react-admin-server/entity/vo"
 	"react-admin-server/entity/vo/system"
 	"react-admin-server/global/g"
@@ -66,4 +67,28 @@ func (*UserController) Delete(ctx *fiber.Ctx) error {
 		return r.Fail(ctx, "当前用户不能删除")
 	}
 	return service.UserService.Delete(ctx, &params.IDs)
+}
+
+// UpdateAvatar 更新头像
+func (*UserController) UpdateAvatar(ctx *fiber.Ctx) error {
+	var param domain.User
+	_ = ctx.BodyParser(&param)
+	if param.Avatar == "" {
+		return r.Fail(ctx, "请指定头像")
+	}
+	return service.UserService.UpdateAvatar(ctx, param.Avatar)
+}
+
+// UpdateProfile 更新用户个人信息
+func (*UserController) UpdateProfile(ctx *fiber.Ctx) error {
+	var param domain.User
+	_ = ctx.BodyParser(&param)
+	if param.NickName == "" {
+		return r.Fail(ctx, "用户昵称不能为空")
+	} else if param.Mobile == "" {
+		return r.Fail(ctx, "手机号不能为空")
+	} else if param.Email == "" {
+		return r.Fail(ctx, "邮箱不能为空")
+	}
+	return service.UserService.UpdateProfile(ctx, &param)
 }

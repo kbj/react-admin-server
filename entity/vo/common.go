@@ -19,3 +19,9 @@ type Page[T any] struct {
 type Ids struct {
 	IDs []int64 `params:"ids"`
 }
+
+type FileInfo struct {
+	OriginFileName string `json:"originFileName"`
+	Path           string `json:"path"`
+	NewFileName    string `json:"newFileName"`
+}

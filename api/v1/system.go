@@ -27,6 +27,8 @@ func (api *SystemApi) initUserApi() {
 	route.Post("/", controller.UserController.Add)
 	route.Put("/", controller.UserController.Edit)
 	route.Delete("/:ids", controller.UserController.Delete)
+	route.Post("/avatar", controller.UserController.UpdateAvatar)
+	route.Post("/profile", controller.UserController.UpdateProfile)
 }
 
 func (api *SystemApi) initDictApi() {

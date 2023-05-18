@@ -168,3 +168,38 @@ func (*UserService) Delete(ctx *fiber.Ctx, ids *[]int64) error {
 		return r.Ok(ctx, r.Msg("删除成功"))
 	})
 }
+
+// UpdateAvatar 更新头像
+func (*UserService) UpdateAvatar(ctx *fiber.Ctx, avatar string) error {
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		var user domain.User
+		if err := tool.LogDbError(tx.First(&user, g.LoginUser.UserId(ctx)).Error); err != nil {
+			return err
+		}
+		user.Avatar = avatar
+		user.UpdateBy = g.LoginUser.UserId(ctx)
+		user.UpdateAt = time.Now().UnixMilli()
+		if err := tool.LogDbError(tx.Updates(&user).Error); err != nil {
+			return err
+		}
+		return r.Ok(ctx)
+	})
+}
+
+// UpdateProfile 更新用户信息
+func (*UserService) UpdateProfile(ctx *fiber.Ctx, param *domain.User) error {
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		var user domain.User
+		if err := tool.LogDbError(tx.First(&user, g.LoginUser.UserId(ctx)).Error); err != nil {
+			return err
+		}
+		user.NickName = param.NickName
+		user.Mobile = param.Mobile
+		user.Email = param.Email
+		user.Gender = param.Gender
+		if err := tool.LogDbError(tx.Updates(&user).Error); err != nil {
+			return err
+		}
+		return r.Ok(ctx)
+	})
+}

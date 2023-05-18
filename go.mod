@@ -12,7 +12,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/gofiber/jwt/v3 v3.3.5
 	github.com/golang-jwt/jwt/v4 v4.4.3
-	github.com/gookit/goutil v0.6.1
+	github.com/gookit/goutil v0.6.8
 	github.com/json-iterator/go v1.1.12
 	github.com/samber/lo v1.37.0
 	github.com/spf13/viper v1.15.0
@@ -57,8 +57,8 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
-	golang.org/x/sys v0.4.0 // indirect
-	golang.org/x/text v0.6.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

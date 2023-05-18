@@ -23,3 +23,22 @@ const (
 	PagingPageNum  = "1"
 	PagingPageSize = "10"
 )
+
+// 文件
+const (
+	MaxFileNameSize = 200 // 最大文件名长度大小
+)
+
+// FileAllowedExtension 默认允许文件格式
+var FileAllowedExtension = [...]string{
+	// 图片
+	".bmp", ".gif", ".jpg", ".jpeg", ".png",
+	// word excel powerpoint
+	".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt",
+	// 压缩文件
+	".rar", ".zip", ".gz", ".bz2",
+	// 视频格式
+	".mp4", ".avi", ".rmvb",
+	// pdf
+	".pdf",
+}

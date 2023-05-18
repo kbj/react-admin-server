@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/gookit/goutil/arrutil"
 	"react-admin-server/global/g"
 	"react-admin-server/service"
 	"react-admin-server/tool/r"
@@ -52,5 +51,10 @@ func jwtSuccessHandler(ctx *fiber.Ctx) error {
 // 绕过Jwt校验的逻辑
 func jwtByPass(ctx *fiber.Ctx) bool {
 	path := ctx.Path()
-	return arrutil.Contains(g.Env.Jwt.ByPass, path)
+	for _, rule := range g.Env.Jwt.ByPass {
+		if fiber.RoutePatternMatch(path, rule) {
+			return true
+		}
+	}
+	return false
 }

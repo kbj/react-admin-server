@@ -3,10 +3,13 @@
 // @date: 2023/2/3
 package service
 
-import "react-admin-server/service/system"
+import (
+	"react-admin-server/service/common"
+	"react-admin-server/service/system"
+)
 
 var (
-	LoginService = new(system.LoginService)
+	LoginService = new(common.LoginService)
 	UserService  = new(system.UserService)
 	DictService  = new(system.DictService)
 	DeptService  = new(system.DeptService)
