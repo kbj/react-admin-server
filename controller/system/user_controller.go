@@ -92,3 +92,13 @@ func (*UserController) UpdateProfile(ctx *fiber.Ctx) error {
 	}
 	return service.UserService.UpdateProfile(ctx, &param)
 }
+
+// UpdatePassword 更新密码
+func (*UserController) UpdatePassword(ctx *fiber.Ctx) error {
+	var param system.ResetPasswordRequest
+	_ = ctx.BodyParser(&param)
+	if err := tool.ValidateParams(&param); err != nil {
+		return err
+	}
+	return service.UserService.UpdatePassword(ctx, &param)
+}

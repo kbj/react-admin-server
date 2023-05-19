@@ -203,3 +203,21 @@ func (*UserService) UpdateProfile(ctx *fiber.Ctx, param *domain.User) error {
 		return r.Ok(ctx)
 	})
 }
+
+// UpdatePassword 更新密码
+func (*UserService) UpdatePassword(ctx *fiber.Ctx, param *system.ResetPasswordRequest) error {
+	user := g.LoginUser.User(ctx)
+	return g.DbClient.Transaction(func(tx *gorm.DB) error {
+		// 检查密码是否一致
+		if user.Password != tool.Md5Encode(user.Username+param.CurrentPassword, 512) {
+			return r.Fail(ctx, "当前密码有误")
+		}
+		user.Password = tool.Md5Encode(user.Username+param.NewPassword, 512)
+		user.UpdateAt = time.Now().UnixMilli()
+		user.UpdateBy = user.ID
+		if err := tx.Updates(&user).Error; err != nil {
+			return err
+		}
+		return r.Ok(ctx)
+	})
+}

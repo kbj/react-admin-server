@@ -29,6 +29,7 @@ func (api *SystemApi) initUserApi() {
 	route.Delete("/:ids", controller.UserController.Delete)
 	route.Post("/avatar", controller.UserController.UpdateAvatar)
 	route.Post("/profile", controller.UserController.UpdateProfile)
+	route.Post("/update-password", controller.UserController.UpdatePassword)
 }
 
 func (api *SystemApi) initDictApi() {
