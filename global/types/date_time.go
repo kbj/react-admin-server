@@ -1,10 +1,27 @@
 package types
 
-import "time"
+import (
+	"database/sql/driver"
+	"fmt"
+	"time"
+)
 
 type DateTime time.Time
 
 const timeFormat = "2006-01-02 15:04:05"
+
+func (t *DateTime) Scan(v interface{}) error {
+	if value, ok := v.(time.Time); ok {
+		*t = DateTime(value)
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
+}
+
+// Value 注意，这里(t DateTime)不能用指针
+func (t DateTime) Value() (driver.Value, error) {
+	return time.Time(t), nil
+}
 
 // UnmarshalJSON 转换成时间戳
 func (t *DateTime) UnmarshalJSON(data []byte) (err error) {
