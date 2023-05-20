@@ -13,4 +13,5 @@ func Init(app *fiber.App) {
 
 	(&CommonApi{router: &v1Group}).Init()                // 系统通用API
 	(&SystemApi{router: v1Group.Group("system")}).Init() // 系统管理
+	(&HomeApi{router: v1Group.Group("home")}).Init()     // 家庭信息管理
 }

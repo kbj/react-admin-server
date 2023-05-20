@@ -5,14 +5,22 @@ package service
 
 import (
 	"react-admin-server/service/common"
+	"react-admin-server/service/home"
 	"react-admin-server/service/system"
 )
 
 var (
 	LoginService = new(common.LoginService)
-	UserService  = new(system.UserService)
-	DictService  = new(system.DictService)
-	DeptService  = new(system.DeptService)
-	MenuService  = new(system.MenuService)
-	RoleService  = new(system.RoleService)
+)
+
+var (
+	UserService = new(system.UserService)
+	DictService = new(system.DictService)
+	DeptService = new(system.DeptService)
+	MenuService = new(system.MenuService)
+	RoleService = new(system.RoleService)
+)
+
+var (
+	WaterService = new(home.WaterService)
 )
