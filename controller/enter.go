@@ -23,5 +23,6 @@ var (
 )
 
 var (
-	WaterController = new(home.WaterController)
+	WaterController       = new(home.WaterController)
+	ElectricityController = new(home.ElectricityController)
 )

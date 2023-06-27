@@ -31,7 +31,7 @@ func (*WaterService) Add(ctx *fiber.Ctx, param *[]domain.Water) error {
 
 			// 保存数据库
 			water.ID = 0
-			water.CreateBy = g.LoginUser.UserId(ctx)
+			water.CreateBy = 1
 			water.CreateAt = time.Now().UnixMilli()
 			if err := tx.Save(&water).Error; err != nil {
 				return err

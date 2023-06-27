@@ -21,6 +21,8 @@ func initTables(db *gorm.DB) {
 		domain.RoleMenu{},
 		domain.UserRole{},
 		domain.Water{},
+		domain.ElectricityMonth{},
+		domain.ElectricityDay{},
 	)
 	if err != nil {
 		g.Logger.Error("自动建表失败", zap.Error(err))

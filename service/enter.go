@@ -22,5 +22,6 @@ var (
 )
 
 var (
-	WaterService = new(home.WaterService)
+	WaterService       = new(home.WaterService)
+	ElectricityService = new(home.ElectricityService)
 )
