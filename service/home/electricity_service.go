@@ -25,7 +25,9 @@ func (*ElectricityService) AddMonth(ctx *fiber.Ctx, param *[]home.ElectricityMon
 			}
 
 			// 检查月份是否存在
-			if err := tx.Model(&domain.ElectricityMonth{}).Where("month = ?", month.Month).Count(&count).Error; err != nil {
+			if err := tx.Model(&domain.ElectricityMonth{}).
+				Where("month = ? and electricity_id = ?", month.Month, month.ElectricityId).
+				Count(&count).Error; err != nil {
 				return err
 			} else if count > 0 {
 				continue
@@ -37,9 +39,10 @@ func (*ElectricityService) AddMonth(ctx *fiber.Ctx, param *[]home.ElectricityMon
 					CreateAt: time.Now().UnixMilli(),
 					CreateBy: 1,
 				},
-				Month:  month.Month,
-				Amount: month.Amount,
-				Fee:    month.Fee,
+				ElectricityId: month.ElectricityId,
+				Month:         month.Month,
+				Amount:        month.Amount,
+				Fee:           month.Fee,
 			}
 			if err := tx.Save(&entity).Error; err != nil {
 				return err
@@ -64,7 +67,9 @@ func (*ElectricityService) AddDay(ctx *fiber.Ctx, param *[]home.ElectricityDay) 
 			}
 
 			// 检查日期是否存在
-			if err = tx.Model(&domain.ElectricityDay{}).Where("date = ?", date).Count(&count).Error; err != nil {
+			if err = tx.Model(&domain.ElectricityDay{}).
+				Where("date = ? and electricity_id = ?", date, day.ElectricityId).
+				Count(&count).Error; err != nil {
 				return err
 			} else if count > 0 {
 				continue
@@ -76,10 +81,11 @@ func (*ElectricityService) AddDay(ctx *fiber.Ctx, param *[]home.ElectricityDay) 
 					CreateAt: time.Now().UnixMilli(),
 					CreateBy: 1,
 				},
-				Date:         date,
-				PeakAmount:   day.PeakAmount,
-				ValleyAmount: day.ValleyAmount,
-				TotalAmount:  day.TotalAmount,
+				Date:          date,
+				ElectricityId: day.ElectricityId,
+				PeakAmount:    day.PeakAmount,
+				ValleyAmount:  day.ValleyAmount,
+				TotalAmount:   day.TotalAmount,
 			}
 			if err = tx.Save(&entity).Error; err != nil {
 				return err
